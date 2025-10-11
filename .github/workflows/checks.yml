@@ -1,35 +1,21 @@
+---
 name: Checks
 
 on: [push]
 
 jobs:
-  test-lint:
-    name: Test and Lint
-    runs-on: ubuntu-latest
-
-    steps:
-      # 1. Docker Compose quraşdır
-      - name: Set up Docker Compose
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y docker-compose-plugin
-          docker compose version
-
-      # 2. Docker Hub login
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USER }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      # 3. Repo-nu yüklə
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      # 4. Test addımı
-      - name: Test
-        run: docker compose run --rm --remove-orphans app sh -c "python manage.py test"
-
-      # 5. Lint addımı
-      - name: Lint
-        run: docker compose run --rm --remove-orphans app sh -c "flake8"
+    test-lint:
+        name: Test and Lint
+        runs-on: ubuntu-latest
+        steps:
+          - name: Login to Docker Hub
+            uses: docker/login-action@v3
+            with:
+              username: ${{ secrets.DOCKERHUB_USER }}
+              password: ${{ secrets.DOCKERHUB_TOKEN }}
+          - name: Checkout
+            uses: actions/checkout@v4
+          - name: Test
+            run: docker compose run --rm app sh -c "python manage.py test"
+          - name: Lint
+            run: docker compose run --rm app sh -c "flake8"
